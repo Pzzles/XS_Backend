@@ -29,6 +29,7 @@ const meetingRoutes = require('./routes/meetingRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes'); // Add subscription routes
 const departmentsRoutes = require('./routes/departmentsRoutes'); // Add departments routes
+const cardTemplatesRoutes = require('./routes/cardTemplatesRoutes'); // Add card templates routes
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -126,7 +127,7 @@ app.post('/AddContact', async (req, res) => {
         // Send email notification if user has email
         if (userData.email) {
             const mailOptions = {
-                from: process.env.EMAIL_USER_XSPARK,
+                from: process.env.EMAIL_USER,
                 to: userData.email,
                 subject: 'Someone Saved Your Contact Information',
                 html: `
@@ -217,7 +218,7 @@ app.post('/saveContact', async (req, res) => {
 
         if (userData && userData.email) {
             const mailOptions = {
-                from: process.env.EMAIL_USER_XSPARK,
+                from: process.env.EMAIL_USER,
                 to: userData.email,
                 subject: 'Someone Saved Your Contact Information',
                 html: `
@@ -302,6 +303,7 @@ app.use('/', cardRoutes);
 app.use('/', contactRoutes);
 app.use('/', meetingRoutes);
 app.use('/', departmentsRoutes); // Add departments routes
+app.use('/', cardTemplatesRoutes); // Add card templates routes
 app.use('/', paymentRoutes);
 
 // Modify the user creation route to handle file upload

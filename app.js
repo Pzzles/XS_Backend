@@ -14,6 +14,7 @@ app.use('/profiles', express.static(path.join(__dirname, 'public/profiles')));
 
 // Register export routes
 app.use('/', exportRoutes);
-// Other route registrations...
+
+
 
 module.exports = app;
