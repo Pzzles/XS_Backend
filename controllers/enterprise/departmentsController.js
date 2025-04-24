@@ -1,4 +1,5 @@
 const { db, admin } = require('../../firebase.js');
+const { ROLES, isValidRole } = require('../../utils/roles.js');
 
 // Helper function for standardized error responses
 const sendError = (res, status, message, error = null) => {
@@ -641,9 +642,14 @@ exports.addEmployee = async (req, res) => {
             colorScheme, // Allow setting a custom color scheme
             company, // Allow setting the company name
             teamId, // New: team ID to assign the employee to
-            role = 'employee',
+            role = ROLES.EMPLOYEE, // Default to employee role using our role constant
             isActive = true
         } = req.body;
+        
+        // Validate role if provided
+        if (role && !isValidRole(role)) {
+            return sendError(res, 400, `Invalid role: ${role}. Valid roles are: ${Object.values(ROLES).join(', ')}`);
+        }
         
         // Validate required parameters
         if (!enterpriseId || !departmentId) {
@@ -852,6 +858,11 @@ exports.addEmployee = async (req, res) => {
             if (teamRef) {
                 employeeData.teamRef = teamRef;
                 employeeData.teamId = teamId;
+                
+                // Automatically set role to team leader if not specified and is new member in a team
+                if (role === ROLES.EMPLOYEE && !await transaction.get(teamRef).data().memberCount) {
+                    employeeData.role = ROLES.TEAM_LEADER;
+                }
             }
             
             // Create or update card document with ALL profile information
@@ -928,6 +939,7 @@ exports.addEmployee = async (req, res) => {
                 departmentRef: departmentRef,
                 enterpriseRef: db.doc(`enterprise/${enterpriseId}`),
                 isEmployee: true,
+                role: employeeData.role,
                 lastVerificationEmailSent: verificationToken ? Date.now() : admin.firestore.FieldValue.serverTimestamp()
             };
             
@@ -988,10 +1000,15 @@ exports.addEmployee = async (req, res) => {
 exports.updateEmployee = async (req, res) => {
     try {
         const { enterpriseId, departmentId, employeeId } = req.params;
-        const { firstName, lastName, email, phone, title, colorScheme, teamId } = req.body;
+        const { firstName, lastName, email, phone, title, colorScheme, teamId, role } = req.body;
         
         if (!enterpriseId || !departmentId || !employeeId) {
             return sendError(res, 400, 'Enterprise ID, Department ID, and Employee ID are required');
+        }
+        
+        // Validate role if provided
+        if (role && !isValidRole(role)) {
+            return sendError(res, 400, `Invalid role: ${role}. Valid roles are: ${Object.values(ROLES).join(', ')}`);
         }
         
         // Check if department exists
@@ -1051,6 +1068,7 @@ exports.updateEmployee = async (req, res) => {
         if (phone !== undefined) updateData.phone = phone;
         if (title !== undefined) updateData.title = title;
         if (colorScheme !== undefined) updateData.colorScheme = colorScheme;
+        if (role !== undefined) updateData.role = role;
         
         // Run transaction for atomic updates
         await db.runTransaction(async (transaction) => {
@@ -1133,6 +1151,13 @@ exports.updateEmployee = async (req, res) => {
             
             // Update the main employee document
             transaction.update(employeeRef, updateData);
+            
+            // Update user document if role changed
+            if (role !== undefined) {
+                transaction.update(db.collection('users').doc(employeeData.userRef.id), {
+                    role: role
+                });
+            }
             
             // Update card document if it exists
             if (employeeData.cardsRef && (firstName !== undefined || lastName !== undefined || email !== undefined || phone !== undefined || title !== undefined || colorScheme !== undefined)) {
