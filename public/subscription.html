@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Subscription - XSCard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .plan-card {
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .plan-card.featured {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+        }
+
+        .plan-card.featured::before {
+            content: "MOST POPULAR";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #667eea;
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .plan-price .currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+
+        .plan-price .period {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .plan-description {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            color: #555;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .plan-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .trial-note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .features-section {
+            background: #f8f9fa;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .features-section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .feature-item {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .feature-item h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .feature-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .plans-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Choose Your Plan</h1>
+            <p>Unlock the full potential of XS Card with our premium features</p>
+        </div>
+
+        <div class="plans-container">
+            <!-- Trial Plan -->
+            <div class="plan-card">
+                <h2 class="plan-name">7-Day Free Trial</h2>
+                <div class="plan-price">
+                    <span class="currency">R</span>1<span class="period">/trial</span>
+                </div>
+                <p class="plan-description">Start with a 7-day free trial to experience all premium features</p>
+                <ul class="plan-features">
+                    <li>All premium features included</li>
+                    <li>Unlimited card scans</li>
+                    <li>Advanced analytics</li>
+                    <li>Priority support</li>
+                    <li>Cancel anytime</li>
+                </ul>
+                <button class="btn btn-secondary" onclick="startTrial()">Start 7-Day Trial</button>
+                <p class="trial-note">R1 verification charge, refunded immediately</p>
+            </div>
+
+            <!-- Regular Plan -->
+            <div class="plan-card featured">
+                <h2 class="plan-name">Premium Monthly</h2>
+                <div class="plan-price">
+                    <span class="currency">R</span>159.99<span class="period">/month</span>
+                </div>
+                <p class="plan-description">Get immediate access to all premium features</p>
+                <ul class="plan-features">
+                    <li>All premium features included</li>
+                    <li>Unlimited card scans</li>
+                    <li>Advanced analytics</li>
+                    <li>Priority support</li>
+                    <li>Cancel anytime</li>
+                    <li>No trial period</li>
+                </ul>
+                <button class="btn btn-primary" onclick="subscribeNow()">Skip Trial, Subscribe Now</button>
+                <p class="trial-note">Immediate access, no trial period</p>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2>What You Get with Premium</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Detailed insights into your card usage and engagement metrics</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Unlimited Scans</h3>
+                    <p>No limits on how many cards you can scan and manage</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Priority Support</h3>
+                    <p>Get help faster with our dedicated support team</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Enhanced Security</h3>
+                    <p>Advanced security features to protect your data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store the authentication token - FRESH TOKEN
+        const authToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjkyZTg4M2NjNDY2M2E2MzMyYWRhNmJjMWU0N2YzZmY1ZTRjOGI1ZDciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20veHNjYXJkLWFkZGQ0IiwiYXVkIjoieHNjYXJkLWFkZGQ0IiwiYXV0aF90aW1lIjoxNzU2MDk3MzI0LCJ1c2VyX2lkIjoiWWN6UWw1UTBSblZ3MGFwNnp3Z0s1cDkwclNiMiIsInN1YiI6IlljelFsNVEwUm5WdzBhcDZ6d2dLNXA5MHJTYjIiLCJpYXQiOjE3NTYwOTczMjQsImV4cCI6MTc1NjEwMDkyNCwiZW1haWwiOiJkYXJpdzE3MjQxQGNoYXVibG9nLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImRhcml3MTcyNDFAY2hhdWJsb2cuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ORQNICIwsEQzY2F6G2naYDJES3omGRYPg14JW2gpqB6PW2wAvmuwyaXZ9euubJlv1fikdtHMrHHrdAX1CQfPLNa4EHNBsDdokiWUZrhfLTboCUjatUKTq0JtaE2sKsK-hiuWbxyfxG1Ncd9bTLJrl2_e-VOD4KoEJ8kaLNIQZkP6lUF-1UgpIQqEFTrQDLn9MFNpIiuLZ6-McY7ues5bQ7DBluwTcZSSs8RrxmWen5LOhovsxzFkKNXJjggJjKdyZc2R1D0ItCa9KhtqRBc-HIh-4eHaAkQVzg7QK2x3nsx_qxVuBk4B9wIeSyZ3yLOAx2ajoizVtWow1B9kcqe4ZA';
+
+        // API base URL - adjust this to match your server
+        const API_BASE_URL = 'http://localhost:8383'; // Updated to match server port
+
+        // Function to get a fresh token (you'll need to implement this)
+        async function getFreshToken() {
+            // This is where you would get a fresh token from your frontend
+            // For now, we'll show an alert with instructions
+            alert('TOKEN EXPIRED!\n\nTo get a fresh token:\n1. Go to your main application\n2. Sign in again\n3. Get the new token from the browser console\n4. Update the authToken variable in this file');
+            return null;
+        }
+
+        async function startTrial() {
+            try {
+                console.log('Starting 7-day trial...');
+                console.log('API URL:', `${API_BASE_URL}/billing/subscriptions/trial/initialize`);
+                console.log('Token:', authToken.substring(0, 50) + '...');
+                
+                const response = await fetch(`${API_BASE_URL}/billing/subscriptions/trial/initialize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        planId: 'MONTHLY_PLAN'
+                    })
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                const data = await response.json();
+                console.log('Trial initialization response:', data);
+
+                if (response.status === 401) {
+                    alert('Authentication failed! Your token has expired. Please get a fresh token.');
+                    await getFreshToken();
+                    return;
+                }
+
+                if (data.status && data.data && data.data.authorization_url) {
+                    // Redirect to Paystack checkout
+                    console.log('Redirecting to Paystack:', data.data.authorization_url);
+                    window.location.href = data.data.authorization_url;
+                } else {
+                    alert('Failed to initialize trial: ' + (data.message || 'Unknown error'));
+                }
+
+            } catch (error) {
+                console.error('Error starting trial:', error);
+                if (error.message.includes('Failed to fetch')) {
+                    alert('Cannot connect to server. Make sure the server is running on port 8383.');
+                } else {
+                    alert('Error starting trial: ' + error.message);
+                }
+            }
+        }
+
+        async function subscribeNow() {
+            try {
+                console.log('Starting regular subscription...');
+                console.log('API URL:', `${API_BASE_URL}/billing/subscriptions/initialize`);
+                console.log('Token:', authToken.substring(0, 50) + '...');
+                
+                const response = await fetch(`${API_BASE_URL}/billing/subscriptions/initialize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        planId: 'MONTHLY_PLAN'
+                    })
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                const data = await response.json();
+                console.log('Subscription initialization response:', data);
+
+                if (response.status === 401) {
+                    alert('Authentication failed! Your token has expired. Please get a fresh token.');
+                    await getFreshToken();
+                    return;
+                }
+
+                if (data.status && data.data && data.data.authorization_url) {
+                    // Redirect to Paystack checkout
+                    console.log('Redirecting to Paystack:', data.data.authorization_url);
+                    window.location.href = data.data.authorization_url;
+                } else {
+                    alert('Failed to initialize subscription: ' + (data.message || 'Unknown error'));
+                }
+
+            } catch (error) {
+                console.error('Error starting subscription:', error);
+                if (error.message.includes('Failed to fetch')) {
+                    alert('Cannot connect to server. Make sure the server is running on port 8383.');
+                } else {
+                    alert('Error starting subscription: ' + error.message);
+                }
+            }
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const planCards = document.querySelectorAll('.plan-card');
+            
+            planCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add loading states to buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const originalText = this.textContent;
+                    this.textContent = 'Processing...';
+                    this.disabled = true;
+                    
+                    // Re-enable after 5 seconds if no redirect happens
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.disabled = false;
+                    }, 5000);
+                });
+            });
+
+            // Show token status on page load
+            console.log('=== SUBSCRIPTION PAGE DEBUG INFO ===');
+            console.log('Server URL:', API_BASE_URL);
+            console.log('Token (first 50 chars):', authToken.substring(0, 50) + '...');
+            console.log('Token expiration check:', new Date().getTime() > 1756100924000 ? 'EXPIRED' : 'VALID');
+            console.log('Current time:', new Date().toISOString());
+            console.log('Token expires:', new Date(1756100924000).toISOString());
+            console.log('=====================================');
+        });
+    </script>
+</body>
+</html>

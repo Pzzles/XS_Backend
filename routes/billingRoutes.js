@@ -1,19 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const { 
+const {
+    // Subscription management
+    initializeSubscription,
+    initializeTrialSubscription,
+    getSubscriptionStatus,
+    cancelSubscription,
+    updateSubscriptionPlan,
+    getSubscriptionPlans,
+    // Payment methods
     getPaymentMethods,
+    addPaymentMethod,
     updatePaymentMethod,
     deletePaymentMethod,
-    addPaymentMethod,
-    handlePaymentMethodCallback
-} = require('../controllers/billingController');
+    // Callbacks and webhooks
+    handleSubscriptionCallback,
+    handleSubscriptionWebhook,
+    handlePaymentMethodCallback,
+    // Legacy support
+    getSubscriptionLogs,
+    getSubscriptionHistory,
+    cleanupUserRecord
+} = require('../controllers/unifiedBillingController');
 const { authenticateUser } = require('../middleware/auth');
 const { db } = require('../firebase');
 
 // Import enterprise controller for invoices functionality
 const enterpriseController = require('../controllers/enterpriseController');
 
-// All billing routes require authentication
+// Public routes (no authentication needed)
+router.get('/subscription/trial/callback', handleSubscriptionCallback);
+router.get('/subscription/callback', handleSubscriptionCallback);
+router.post('/subscription/webhook', handleSubscriptionWebhook);
+
+// All other billing routes require authentication
 router.use(authenticateUser);
 
 // Debug endpoint to check payment methods data
@@ -74,6 +94,17 @@ router.delete('/billing/payment-methods/:id', deletePaymentMethod);
 // Payment method callback endpoint
 router.get('/billing/payment-method/callback', handlePaymentMethodCallback);
 router.post('/billing/payment-method/callback', handlePaymentMethodCallback);
+
+// Subscription endpoints
+router.post('/billing/subscriptions/initialize', initializeSubscription);
+router.post('/billing/subscriptions/trial/initialize', initializeTrialSubscription);
+router.get('/billing/subscriptions/plans', getSubscriptionPlans);
+router.get('/billing/subscriptions/status', getSubscriptionStatus);
+router.put('/billing/subscriptions/plan', updateSubscriptionPlan);
+router.post('/billing/subscriptions/cancel', cancelSubscription);
+router.get('/billing/subscriptions/logs', getSubscriptionLogs);
+router.get('/billing/subscriptions/history', getSubscriptionHistory);
+router.post('/billing/subscriptions/cleanup', cleanupUserRecord);
 
 // Invoices endpoint - reuses enterprise controller logic
 router.get('/billing/invoices', enterpriseController.getEnterpriseInvoices);

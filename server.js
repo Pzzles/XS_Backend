@@ -32,7 +32,6 @@ const userRoutes = require('./routes/userRoutes');
 const cardRoutes = require('./routes/cardRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const billingRoutes = require('./routes/billingRoutes');
 const departmentsRoutes = require('./routes/departmentsRoutes');
@@ -74,7 +73,6 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Public routes - must be before authentication middleware
-app.use('/', paymentRoutes);
 app.use('/', subscriptionRoutes);
 
 // Location analytics routes
@@ -607,7 +605,6 @@ app.use('/', cardRoutes);
 app.use('/', contactRoutes);
 app.use('/', meetingRoutes);
 app.use('/', departmentsRoutes);
-app.use('/', paymentRoutes);
 app.use('/', billingRoutes);
 app.use('/', activityLogRoutes); // Mount at root instead of /api/logs
 app.use('/api', enterpriseRoutes); // Mount enterprise routes with /api prefix
